@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+<!-- Perplexity Computer Attribution — SEO Meta Tags -->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4EVR.ink — Business Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+/* ========== Reset & Base ========== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0f0e0c;
+  --card: #1a1918;
+  --card-border: #2a2826;
+  --card-hover: #222120;
+  --gold: #e8b94a;
+  --gold-dark: #d4a04a;
+  --gold-dim: rgba(232, 185, 74, 0.12);
+  --gold-glow: rgba(232, 185, 74, 0.06);
+  --text-primary: #e8e4df;
+  --text-secondary: #9a9590;
+  --text-muted: #6b6560;
+  --green: #4ade80;
+  --green-dim: rgba(74, 222, 128, 0.12);
+  --yellow: #facc15;
+  --yellow-dim: rgba(250, 204, 21, 0.12);
+  --red: #f87171;
+  --red-dim: rgba(248, 113, 113, 0.12);
+  --blue: #60a5fa;
+  --orange: #fb923c;
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+  --shadow-lg: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* ========== Layout ========== */
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+/* ========== Animations ========== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-in {
+  animation: fadeInUp 0.5s ease-out both;
+}
+
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+.stagger-7 { animation-delay: 0.35s; }
+.stagger-8 { animation-delay: 0.4s; }
+
+/* ========== Header ========== */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header-left h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+}
+
+.header-left .subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.last-synced {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.mode-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-family: var(--font-mono);
+}
+
+.mode-badge.live {
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.mode-badge.demo {
+  background: var(--yellow-dim);
+  color: var(--yellow);
+  border: 1px solid rgba(250, 204, 21, 0.2);
+}
+
+/* ========== Cards ========== */
+.card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: border-color 0.2s ease;
+}
+
+.card:hover {
+  border-color: #3a3836;
+}
+
+.card-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+/* ========== Section Spacing ========== */
+.section {
+  margin-bottom: 20px;
+}
+
+/* ========== System Status Banner ========== */
+.status-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 20px;
+}
+
+.status-items {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.green { background: var(--green); box-shadow: 0 0 6px rgba(74, 222, 128, 0.4); }
+.status-dot.yellow { background: var(--yellow); box-shadow: 0 0 6px rgba(250, 204, 21, 0.4); }
+.status-dot.red { background: var(--red); box-shadow: 0 0 6px rgba(248, 113, 113, 0.4); }
+
+.status-label {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.fee-info {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ========== KPI Cards ========== */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.kpi-card {
+  text-align: center;
+  padding: 24px 16px;
+}
+
+.kpi-value {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.kpi-value.gold {
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.kpi-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+/* ========== Charts ========== */
+.chart-container {
+  position: relative;
+  width: 100%;
+}
+
+.charts-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 16px;
+}
+
+.chart-wrapper {
+  padding: 4px 0 0;
+}
+
+/* ========== Donut Legend ========== */
+.donut-container {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.donut-chart-wrap {
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
+}
+
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-text {
+  font-size: 0.825rem;
+  color: var(--text-secondary);
+}
+
+.legend-value {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-left: auto;
+  font-size: 0.825rem;
+}
+
+/* ========== Table ========== */
+.table-wrap {
+  overflow-x: auto;
+  margin: 0 -20px;
+  padding: 0 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.825rem;
+}
+
+thead th {
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  padding: 0 12px 12px;
+  border-bottom: 1px solid var(--card-border);
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 12px;
+  border-bottom: 1px solid rgba(42, 40, 38, 0.5);
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover td {
+  background: rgba(255,255,255,0.015);
+}
+
+.msg-cell {
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ========== Status Badges ========== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.badge.confirmed {
+  background: var(--green-dim);
+  color: var(--green);
+}
+
+.badge.pending {
+  background: var(--yellow-dim);
+  color: var(--yellow);
+}
+
+.badge.failed {
+  background: var(--red-dim);
+  color: var(--red);
+}
+
+.badge-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ========== Ambassador Cards ========== */
+.ambassador-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.amb-stat {
+  text-align: center;
+  padding: 16px 12px;
+  background: rgba(255,255,255,0.02);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(42, 40, 38, 0.5);
+}
+
+.amb-stat .value {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.amb-stat .label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ========== Placeholder Sections ========== */
+.placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.placeholder-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  background: var(--gold-dim);
+  color: var(--gold);
+}
+
+.placeholder-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.placeholder-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.placeholder-subtitle {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.placeholder-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  max-width: 360px;
+  line-height: 1.5;
+  opacity: 0.7;
+}
+
+.placeholders-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ========== Footer ========== */
+footer {
+  text-align: center;
+  padding: 24px 0 0;
+  border-top: 1px solid var(--card-border);
+  margin-top: 12px;
+}
+
+footer a {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+footer a:hover {
+  opacity: 1;
+  color: var(--text-secondary);
+}
+
+/* ========== Loading State ========== */
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.loading-state .spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--card-border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 900px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+  .ambassador-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .placeholders-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .dashboard {
+    padding: 16px 12px 48px;
+  }
+  .header {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .header-right {
+    justify-content: flex-start;
+  }
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .kpi-value {
+    font-size: 1.5rem;
+  }
+  .status-items {
+    gap: 12px;
+  }
+  .status-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .donut-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .donut-legend {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  table {
+    font-size: 0.75rem;
+  }
+  .msg-cell {
+    max-width: 160px;
+  }
+  .ambassador-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 380px) {
+  .kpi-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="dashboard" id="app">
+  <div class="loading-state" id="loading">
+    <div class="spinner"></div>
+    Loading dashboard data...
+  </div>
+</div>
+
+<script>
+(async function() {
+  // ===== Helpers =====
+  function fmt(n) {
+    if (n == null) return '—';
+    return n.toLocaleString('en-US');
+  }
+
+  function fmtUSD(n) {
+    if (n == null) return '—';
+    return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  }
+
+  function fmtDate(str) {
+    if (!str) return '—';
+    const d = new Date(str);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function fmtDateShort(str) {
+    if (!str) return '';
+    const d = new Date(str);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  function fmtSyncTime(str) {
+    if (!str) return '';
+    const d = new Date(str);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
+      ' at ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+  }
+
+  function truncate(s, max) {
+    if (!s) return '—';
+    return s.length > max ? s.slice(0, max) + '…' : s;
+  }
+
+  function statusColor(s) {
+    if (!s) return 'yellow';
+    s = s.toLowerCase();
+    if (s === 'live' || s === 'ok' || s === 'confirmed') return 'green';
+    if (s === 'demo') return 'yellow';
+    return 'red';
+  }
+
+  function statusLabel(s) {
+    if (!s) return 'Unknown';
+    const m = { 'ok': 'Live', 'live': 'Live', 'demo': 'Demo', 'down': 'Down', 'error': 'Error' };
+    return m[s.toLowerCase()] || s;
+  }
+
+  function paymentLabel(p) {
+    if (!p) return 'Seed';
+    const m = { 'card': 'Card', 'bitcoin': 'Bitcoin', 'btc': 'Bitcoin' };
+    return m[p.toLowerCase()] || p;
+  }
+
+  // ===== Fetch Data =====
+  let data;
+  try {
+    const resp = await fetch('data.json');
+    data = await resp.json();
+  } catch (e) {
+    document.getElementById('loading').innerHTML = '<span style="color:var(--red)">Failed to load data.json</span>';
+    return;
+  }
+
+  const app = document.getElementById('app');
+  const health = data.system?.health || {};
+  const fees = data.system?.fees || {};
+  const kpis = data.declarations?.kpis || {};
+  const daily = data.declarations?.daily || [];
+  const paymentMethods = data.declarations?.payment_methods || {};
+  const recent = data.declarations?.recent || [];
+  const ambassadors = data.ambassadors || {};
+  const mode = data.system?.mode || health.mode || 'demo';
+  const meta = data._meta || {};
+
+  // ===== Build HTML =====
+  let html = '';
+
+  // --- Header ---
+  html += `
+  <header class="header animate-in">
+    <div class="header-left">
+      <h1>4EVR.ink</h1>
+      <div class="subtitle">Business Dashboard</div>
+    </div>
+    <div class="header-right">
+      <span class="last-synced">Last synced: ${fmtSyncTime(meta.last_synced)}</span>
+      <span class="mode-badge ${mode === 'live' ? 'live' : 'demo'}">${mode === 'live' ? 'Live' : 'Demo'}</span>
+    </div>
+  </header>`;
+
+  // --- System Status Banner ---
+  const services = [
+    { key: 'status', label: 'API', val: health.status },
+    { key: 'stripe', label: 'Stripe', val: health.stripe },
+    { key: 'opennode', label: 'OpenNode', val: health.opennode },
+    { key: 'bitcoin', label: 'Bitcoin Node', val: health.bitcoin },
+    { key: 'creativehub', label: 'CreativeHub', val: health.creativehub },
+  ];
+
+  html += `
+  <div class="section animate-in stagger-1">
+    <div class="card status-banner">
+      <div class="status-items">
+        ${services.map(s => `
+          <div class="status-item">
+            <span class="status-dot ${statusColor(s.val)}"></span>
+            <span style="color:var(--text-muted)">${s.label}</span>
+            <span class="status-label">${statusLabel(s.val)}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="fee-info">${fees.feeRate || '—'} sat/vB · ${fees.feeUsd != null ? '$' + fees.feeUsd.toFixed(2) : '—'}</div>
+    </div>
+  </div>`;
+
+  // --- KPI Cards ---
+  html += `
+  <div class="section animate-in stagger-2">
+    <div class="kpi-grid">
+      <div class="card kpi-card">
+        <div class="kpi-value gold">${fmt(kpis.total)}</div>
+        <div class="kpi-label">Total Declarations</div>
+      </div>
+      <div class="card kpi-card">
+        <div class="kpi-value">${fmt(kpis.confirmed)}</div>
+        <div class="kpi-label">Confirmed</div>
+      </div>
+      <div class="card kpi-card">
+        <div class="kpi-value">${fmt(kpis.this_week)}</div>
+        <div class="kpi-label">This Week</div>
+      </div>
+      <div class="card kpi-card">
+        <div class="kpi-value gold">${fmtUSD(kpis.est_revenue_usd)}</div>
+        <div class="kpi-label">Est. Revenue</div>
+      </div>
+    </div>
+  </div>`;
+
+  // --- Charts Row: Bar + Donut ---
+  html += `
+  <div class="section animate-in stagger-3">
+    <div class="charts-row">
+      <div class="card">
+        <div class="card-title">Declarations Over Time</div>
+        <div class="chart-wrapper" style="height:260px;">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Payment Methods</div>
+        <div class="donut-container">
+          <div class="donut-chart-wrap">
+            <canvas id="donutChart"></canvas>
+          </div>
+          <div class="donut-legend" id="donutLegend"></div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  // --- Recent Declarations Table ---
+  const recentSlice = recent.slice(0, 10);
+  html += `
+  <div class="section animate-in stagger-4">
+    <div class="card">
+      <div class="card-title">Recent Declarations</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Message</th>
+              <th>Status</th>
+              <th>Payment</th>
+              <th>Block Height</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${recentSlice.map(r => `
+              <tr>
+                <td class="msg-cell" title="${(r.message || '').replace(/"/g, '&quot;')}">${truncate(r.message, 40)}</td>
+                <td><span class="badge ${r.status || 'pending'}"><span class="badge-dot"></span>${r.status || 'pending'}</span></td>
+                <td style="color:var(--text-muted)">${paymentLabel(r.payment_method)}</td>
+                <td class="mono">${r.block_height ? fmt(r.block_height) : '—'}</td>
+                <td class="mono" style="white-space:nowrap">${fmtDateShort(r.created_at)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+
+  // --- Ambassador Program ---
+  html += `
+  <div class="section animate-in stagger-5">
+    <div class="card">
+      <div class="card-title">Ambassador Program</div>
+      <div class="ambassador-grid">
+        <div class="amb-stat">
+          <div class="value">${fmt(ambassadors.active)}</div>
+          <div class="label">Active</div>
+        </div>
+        <div class="amb-stat">
+          <div class="value">${fmt(ambassadors.cap)}</div>
+          <div class="label">Cap</div>
+        </div>
+        <div class="amb-stat">
+          <div class="value">${fmt(ambassadors.spots_remaining)}</div>
+          <div class="label">Spots Left</div>
+        </div>
+        <div class="amb-stat">
+          <div class="value">${fmt(ambassadors.waitlist_count)}</div>
+          <div class="label">Waitlist</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  // --- Placeholder Sections ---
+  html += `
+  <div class="section animate-in stagger-6">
+    <div class="placeholders-row">
+      <div class="card">
+        <div class="placeholder-content">
+          <div class="placeholder-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+            </svg>
+          </div>
+          <div class="placeholder-title">Website Traffic</div>
+          <div class="placeholder-subtitle">Awaiting GA4 Connection</div>
+          <div class="placeholder-desc">Sessions, users, and pageview data will appear here once Google Analytics is connected.</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="placeholder-content">
+          <div class="placeholder-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="placeholder-title">Financial Overview</div>
+          <div class="placeholder-subtitle">Awaiting Mercury + QuickBooks Connection</div>
+          <div class="placeholder-desc">Account balances, P&L, and cash flow data will appear here once connected.</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  // --- Footer ---
+  html += `
+  <footer class="animate-in stagger-7">
+    <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+  </footer>`;
+
+  app.innerHTML = html;
+
+  // ===== Charts =====
+  const chartDefaults = Chart.defaults;
+  chartDefaults.color = '#9a9590';
+  chartDefaults.font.family = "'JetBrains Mono', 'SF Mono', monospace";
+  chartDefaults.font.size = 11;
+
+  // --- Bar Chart ---
+  const barLabels = daily.map(d => fmtDateShort(d.date));
+  const barData = daily.map(d => d.count);
+
+  new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+      labels: barLabels,
+      datasets: [{
+        data: barData,
+        backgroundColor: 'rgba(232, 185, 74, 0.75)',
+        hoverBackgroundColor: '#e8b94a',
+        borderRadius: 4,
+        borderSkipped: false,
+        maxBarThickness: 48,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1a1918',
+          borderColor: '#2a2826',
+          borderWidth: 1,
+          titleColor: '#e8e4df',
+          bodyColor: '#e8e4df',
+          padding: 10,
+          cornerRadius: 8,
+          displayColors: false,
+          callbacks: {
+            title: (items) => items[0].label,
+            label: (item) => item.raw + (item.raw === 1 ? ' declaration' : ' declarations')
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { 
+            color: '#6b6560',
+            maxRotation: 45,
+            font: { size: 10 }
+          },
+          border: { display: false }
+        },
+        y: {
+          beginAtZero: true,
+          grid: { color: 'rgba(42,40,38,0.6)', drawTicks: false },
+          ticks: { 
+            color: '#6b6560',
+            stepSize: 1,
+            padding: 8,
+            font: { size: 10 }
+          },
+          border: { display: false }
+        }
+      },
+      animation: {
+        duration: 800,
+        easing: 'easeOutQuart'
+      }
+    }
+  });
+
+  // --- Donut Chart ---
+  // Filter out zero-value payment methods from the donut chart
+  const pmEntriesAll = Object.entries(paymentMethods);
+  const pmEntries = pmEntriesAll.filter(e => e[1] > 0);
+  const pmLabels = pmEntries.map(e => e[0]);
+  const pmValues = pmEntries.map(e => e[1]);
+  const pmTotal = pmValues.reduce((a, b) => a + b, 0);
+  const colorMap = { 'Card (Stripe)': '#e8b94a', 'Bitcoin': '#fb923c', 'Demo/Seed': '#4a4744' };
+  const pmColors = pmEntries.map(e => colorMap[e[0]] || '#4a4744');
+
+  const donutChart = new Chart(document.getElementById('donutChart'), {
+    type: 'doughnut',
+    data: {
+      labels: pmLabels,
+      datasets: [{
+        data: pmValues,
+        backgroundColor: pmColors.slice(0, pmEntries.length),
+        borderWidth: 0,
+        hoverOffset: 4,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      cutout: '68%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1a1918',
+          borderColor: '#2a2826',
+          borderWidth: 1,
+          titleColor: '#e8e4df',
+          bodyColor: '#e8e4df',
+          padding: 10,
+          cornerRadius: 8,
+          callbacks: {
+            label: (item) => {
+              const pct = pmTotal > 0 ? ((item.raw / pmTotal) * 100).toFixed(0) : 0;
+              return ` ${item.label}: ${item.raw} (${pct}%)`;
+            }
+          }
+        }
+      },
+      animation: {
+        animateRotate: true,
+        duration: 800,
+        easing: 'easeOutQuart'
+      }
+    }
+  });
+
+  // Build donut legend (show all methods including zeros)
+  const legendEl = document.getElementById('donutLegend');
+  const allColorMap = { 'Card (Stripe)': '#e8b94a', 'Bitcoin': '#fb923c', 'Demo/Seed': '#4a4744' };
+  pmEntriesAll.forEach((entry) => {
+    const pct = pmTotal > 0 ? ((entry[1] / pmTotal) * 100).toFixed(0) : 0;
+    const color = allColorMap[entry[0]] || '#4a4744';
+    legendEl.innerHTML += `
+      <div class="legend-item">
+        <span class="legend-dot" style="background:${color}"></span>
+        <span class="legend-text">${entry[0]}</span>
+        <span class="legend-value">${entry[1]} <span style="color:var(--text-muted);font-weight:400">(${pct}%)</span></span>
+      </div>`;
+  });
+
+})();
+</script>
+</body>
+</html>
